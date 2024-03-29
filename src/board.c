@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/input.h"
 #include "../include/logging.h"
 #include "../include/board.h"
 
@@ -14,39 +13,42 @@ void displayList(ListNodePtr startPtr)
 {
     if (startPtr ==  NULL)
     {
+        printf("    EMPTY LIST\n");
         return;
     }
 
     ListNodePtr currentPtr = startPtr;
-    while (currentPtr->nextPtr != NULL)
+    while (currentPtr != NULL)
     {
-        printf("-> %s\n", currentPtr->listItem);
+        printf("    %s\n", currentPtr->listItem);
     
         currentPtr = currentPtr->nextPtr;
     }
-    printf("-> %s\n", currentPtr->listItem);
 }
 
 void displayBoard(BoardNodePtr startPtr)
 {
     if (startPtr == NULL)
     {
+        printf("The board is currently empty.\n");
         return;
     }
 
     BoardNodePtr currentPtr = startPtr;
     while (currentPtr->nextPtr != NULL)
     {
-        printf("%s\n", currentPtr->listName);
+        printf("%s:\n", currentPtr->listName);
         displayList(currentPtr->startPtr);
+        printf("\n");
 
         currentPtr = currentPtr->nextPtr;
     }
-    printf("%s\n", currentPtr->listName);
+    printf("%s:\n", currentPtr->listName);
     displayList(currentPtr->startPtr);
+    printf("\n");
 }
 
-int insertListItem(ListNodePtr *startPtr)
+int insertListItem(ListNodePtr *startPtr, char listItem[80])
 {
     ListNodePtr newListItem = malloc(sizeof(ListNode));
     if (newListItem == NULL)
@@ -57,8 +59,7 @@ int insertListItem(ListNodePtr *startPtr)
 
     newListItem->nextPtr = *startPtr;
     newListItem->prevPtr = NULL;
-    printf("Enter the name of the new item:\n");
-    fngets(newListItem->listItem, 80);
+    strcpy(newListItem->listItem, listItem);
 
     if (*startPtr != NULL)
     {
@@ -104,7 +105,7 @@ void freeBoard(BoardNodePtr startPtr)
     free(currentPtr);
 }
 
-int insertList(BoardNodePtr *startPtr)
+int insertList(BoardNodePtr *startPtr, char listName[80])
 {
     // allocate new node
     BoardNodePtr newList = malloc(sizeof(BoardNode));
@@ -119,8 +120,7 @@ int insertList(BoardNodePtr *startPtr)
     newList->nextPtr = *startPtr;
     newList->prevPtr = NULL;
     newList->startPtr = NULL;
-    printf("Enter the name of the new list:\n");
-    fngets(newList->listName, 80); 
+    strcpy(newList->listName, listName);
 
     if (*startPtr != NULL)
     {
@@ -129,6 +129,17 @@ int insertList(BoardNodePtr *startPtr)
     *startPtr = newList;
 
     return 0;
+}
+
+BoardNodePtr searchByListName(BoardNodePtr startPtr, char* listName)
+{
+    BoardNodePtr currentPtr = startPtr;
+    while (currentPtr != NULL && strcmp(currentPtr->listName, listName) != 0)
+    {
+        currentPtr = currentPtr->nextPtr;
+    }
+
+    return currentPtr;
 }
 
 int removeList(BoardNodePtr startPtr, char listName[80])

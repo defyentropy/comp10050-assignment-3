@@ -19,9 +19,10 @@ typedef struct boardNode {
 typedef BoardNode *BoardNodePtr;
 
 BoardNodePtr initialiseBoard();
-int insertListItem(ListNodePtr *startPtr);
+int insertListItem(ListNodePtr *startPtr, char listItem[80]);
 void freeListItems(ListNodePtr startPtr);
-int insertList(BoardNodePtr *startPtr);
+int insertList(BoardNodePtr *startPtr, char listName[80]);
+BoardNodePtr searchByListName(BoardNodePtr startPtr, char* listName);
 int removeList(BoardNodePtr startPtr, char listName[80]);
 void freeBoard(BoardNodePtr startPtr);
 void displayList(ListNodePtr startPtr);
