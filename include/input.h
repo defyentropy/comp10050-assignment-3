@@ -3,6 +3,6 @@
 
 int fngets(char *dest, int length);
 int getNum(long *dest);
-bool getYesOrNo(void);
+int getYesOrNo(void);
 
 #endif

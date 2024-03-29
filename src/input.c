@@ -119,7 +119,7 @@ int getNum(long *dest)
 }
 
 // obtains y/n input from the user.
-bool getYesOrNo(void)
+int  getYesOrNo(void)
 {
     char yesOrNo[128];
 
@@ -134,10 +134,10 @@ bool getYesOrNo(void)
 
     if (yesOrNo[0] == 'y')
     {
-        return true;
+        return 1;
     }
     else
     {
-        return false;
+        return 0;
     }
 }
