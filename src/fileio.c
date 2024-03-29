@@ -12,7 +12,7 @@ int containsSpecialCharacters(char *str)
 
     for (int i = 0; i < strLen; i++)
     {
-        if (str[i] == ',' || str[i] == '\'' || str[i] == '"' || str[i] == ' ')
+        if (str[i] == ',' || str[i] == '"' || str[i] == ' ')
         {
             specialCharsPresent = 1;
             break;
@@ -37,16 +37,17 @@ char *csvNormaliseString(char *plainString)
         }
         normalisedString[j++] = plainString[i];
     }
-    normalisedString[j] = '"';
+    normalisedString[j++] = '"';
+    normalisedString[j++] = '\0';
 
     return normalisedString;
 }
 
-char *csvParseString(FILE *fPtr)
+char *csvParseString(FILE *fPtr, int fieldNum)
 {
-    char thisChar = '\0';
-    char *parsedString = malloc(384);
     int i = 0;
+    char *parsedString = malloc(80);
+    char thisChar;
     int quoteOpened = 0;
     int lastCharacterWasQuote = 0;
     int malformedLine = 0;
@@ -57,40 +58,51 @@ char *csvParseString(FILE *fPtr)
     }
     while (!feof(fPtr))
     {
+        if (i > 79)
+        {
+            malformedLine = 1;
+            break;
+        }
+
         if (thisChar == '"')
         {
-            if (!quoteOpened)
+            if (i == 0)
             {
                 quoteOpened = 1;
             }
+            else if (!quoteOpened)
+            {
+                malformedLine = 1;
+                break;
+            }
+            else  if (lastCharacterWasQuote)
+            {
+                parsedString[i++] = thisChar;
+                lastCharacterWasQuote = 0;
+            }
             else
             {
-                if (lastCharacterWasQuote)
-                {
-                    parsedString[i++] = thisChar;
-                    lastCharacterWasQuote = 0;
-                }
-                else
-                {
-                    lastCharacterWasQuote = 1;
-                }
+                lastCharacterWasQuote = 1;
             }
         }
         else
         {
-            if (lastCharacterWasQuote && (thisChar == ',' || thisChar == '\n'))
+            if ((lastCharacterWasQuote || !quoteOpened)  && (thisChar == ',' || thisChar == '\n'))
             {
-                quoteOpened = 0;
-                break;
-            }
-            else if (!quoteOpened && (thisChar == ',' || thisChar == '\n'))
-            {
+                if (fieldNum == 0 && thisChar != ',')
+                {
+                    malformedLine = 1;
+                }
+                else if (fieldNum == 1 && thisChar != '\n')
+                {
+                    malformedLine = 1;
+                }
+
                 break;
             }
             else if (lastCharacterWasQuote)
             {
                 malformedLine = 1;
-                lastCharacterWasQuote = 0;
                 break;
             }
             else if (thisChar == '\n')
@@ -106,7 +118,6 @@ char *csvParseString(FILE *fPtr)
 
         thisChar = getc(fPtr);
     }
-    parsedString[i] = '\0';
 
     if (malformedLine || feof(fPtr))
     {
@@ -115,6 +126,7 @@ char *csvParseString(FILE *fPtr)
     }
     else
     {
+        parsedString[i] = '\0';
         return parsedString;
     }
 }
@@ -192,8 +204,8 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
     while(!feof(fPtr))
     {
         lineNum++;
-        char *listName = csvParseString(fPtr);
-        char *listItem = csvParseString(fPtr);
+        char *listName = csvParseString(fPtr, 0);
+        char *listItem = csvParseString(fPtr, 1);
 
         if (listName != NULL && listItem != NULL)
         {
