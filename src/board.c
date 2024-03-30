@@ -20,8 +20,8 @@ void displayList(ListNodePtr startPtr)
     ListNodePtr currentPtr = startPtr;
     while (currentPtr != NULL)
     {
-        printf("    %s\n", currentPtr->listItem);
-    
+        cprintf(37, "    • ");
+        printf("%s\n", currentPtr->listItem);
         currentPtr = currentPtr->nextPtr;
     }
 }
@@ -35,17 +35,14 @@ void displayBoard(BoardNodePtr startPtr)
     }
 
     BoardNodePtr currentPtr = startPtr;
-    while (currentPtr->nextPtr != NULL)
+    while (currentPtr != NULL)
     {
-        printf("%s:\n", currentPtr->listName);
+        cprintf(37 , "%s:\n", currentPtr->listName);
         displayList(currentPtr->startPtr);
         printf("\n");
 
         currentPtr = currentPtr->nextPtr;
     }
-    printf("%s:\n", currentPtr->listName);
-    displayList(currentPtr->startPtr);
-    printf("\n");
 }
 
 int insertListItem(ListNodePtr *startPtr, char listItem[80])
@@ -131,10 +128,21 @@ int insertList(BoardNodePtr *startPtr, char listName[80])
     return 0;
 }
 
-BoardNodePtr searchByListName(BoardNodePtr startPtr, char* listName)
+BoardNodePtr searchByListName(BoardNodePtr startPtr, char *listName)
 {
     BoardNodePtr currentPtr = startPtr;
     while (currentPtr != NULL && strcmp(currentPtr->listName, listName) != 0)
+    {
+        currentPtr = currentPtr->nextPtr;
+    }
+
+    return currentPtr;
+}
+
+ListNodePtr searchByListItemName(ListNodePtr startPtr, char *listItem)
+{
+    ListNodePtr currentPtr = startPtr;
+    while (currentPtr != NULL && strcmp(currentPtr->listItem, listItem) != 0)
     {
         currentPtr = currentPtr->nextPtr;
     }

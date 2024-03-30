@@ -5,6 +5,180 @@
 #include "../include/board.h"
 #include "../include/logging.h"
 
+int csvParseString(FILE *fPtr, char *dest, char *thisChar)
+{
+    int charsWritten = 0;
+    int charsRead = 0;
+    int quoteOpened = 0;
+    int lastCharacterWasQuote = 0;
+    int malformedField = 0;
+
+    if (!feof(fPtr))
+    {
+        *thisChar = fgetc(fPtr);
+        charsRead++;
+    }
+    while (!feof(fPtr))
+    {
+        if (charsWritten > 79)
+        {
+            malformedField = 1;
+            break;
+        }
+        else if (*thisChar == '"')
+        {
+            if (charsRead == 1)
+            {
+                quoteOpened = 1;
+            }
+            else if (!quoteOpened)
+            {
+                malformedField = 1;
+                break;
+            }
+            else if (lastCharacterWasQuote)
+            {
+                dest[charsWritten++] = *thisChar;
+                lastCharacterWasQuote = 0;
+            }
+            else
+            {
+                lastCharacterWasQuote = 1;
+            }
+        }
+        else
+        {
+            if ((lastCharacterWasQuote || !quoteOpened)  && (*thisChar == ',' || *thisChar == '\n'))
+            {
+                break;
+            }
+            else if (lastCharacterWasQuote)
+            {
+                malformedField = 1;
+                break;
+            }
+            else if (charsRead == 1 && *thisChar == ' ')
+            {
+                malformedField = 1;
+                break;
+            }
+            else
+            {
+                dest[charsWritten++] = *thisChar;
+            }
+        }
+
+        *thisChar = fgetc(fPtr);
+        charsRead++;
+    }
+    dest[charsWritten++] = '\0';
+
+    if (feof(fPtr))
+    {
+        if (lastCharacterWasQuote)
+        {
+            return 0;
+        }
+        else if (charsWritten > 1)
+        {
+            return 1;
+        }
+        else
+        {
+            return 2;
+        }
+    }
+    else if (malformedField || charsWritten == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int csvParseLine(FILE *fPtr, char *listName, char *listItem)
+{
+    int lineStatus = 0;
+    char thisChar;
+
+    lineStatus = csvParseString(fPtr, listName, &thisChar);
+
+    if (!lineStatus)
+    {
+        if (thisChar != ',')
+        {
+            lineStatus = 1;
+        }
+
+        lineStatus = csvParseString(fPtr, listItem, &thisChar);
+
+        if (thisChar != '\n')
+        {
+            lineStatus = 1;
+        }
+    }
+
+    return lineStatus;
+}
+
+int readFromFile(char *fileName, BoardNodePtr *startPtr)
+{
+    FILE *fPtr;
+    int lineNum = 0;
+    int err = 0;
+    int lineStatus = 0;
+    char *listName = malloc(80), *listItem = malloc(80);
+
+    if ((fPtr = fopen(fileName, "r")) == NULL)
+    {
+        printLog('e', "Could not open file.\n");
+        return 1;
+    }
+
+    while(!feof(fPtr))
+    {
+        lineNum++;
+        lineStatus = csvParseLine(fPtr, listName, listItem);
+
+        if (lineStatus == 0)
+        {
+            BoardNodePtr listPtr = searchByListName(*startPtr, listName);
+            if (listPtr == NULL)
+            {
+                if (insertList(startPtr, listName) == 0)
+                {
+                    listPtr = *startPtr;
+                }
+                else
+                {
+                    err = 2;
+                    break;
+                }
+            }
+
+            if (insertListItem(&(listPtr->startPtr), listItem) == 1)
+            {
+                err = 2;
+                break;
+            }
+        }
+        else if (lineStatus == 1) 
+        {
+                printLog('e', "Error parsing CSV on line %d.\n", lineNum);
+                err = 1;
+                break;
+        }
+    }
+
+    free(listName);
+    free(listItem);
+    fclose(fPtr);
+
+    return err;
+}
+
 int containsSpecialCharacters(char *str)
 {
     int strLen = strlen(str);
@@ -41,94 +215,6 @@ char *csvNormaliseString(char *plainString)
     normalisedString[j++] = '\0';
 
     return normalisedString;
-}
-
-char *csvParseString(FILE *fPtr, int fieldNum)
-{
-    int i = 0;
-    char *parsedString = malloc(80);
-    char thisChar;
-    int quoteOpened = 0;
-    int lastCharacterWasQuote = 0;
-    int malformedLine = 0;
-
-    if (!feof(fPtr))
-    {
-        thisChar = getc(fPtr);
-    }
-    while (!feof(fPtr))
-    {
-        if (i > 79)
-        {
-            malformedLine = 1;
-            break;
-        }
-
-        if (thisChar == '"')
-        {
-            if (i == 0)
-            {
-                quoteOpened = 1;
-            }
-            else if (!quoteOpened)
-            {
-                malformedLine = 1;
-                break;
-            }
-            else  if (lastCharacterWasQuote)
-            {
-                parsedString[i++] = thisChar;
-                lastCharacterWasQuote = 0;
-            }
-            else
-            {
-                lastCharacterWasQuote = 1;
-            }
-        }
-        else
-        {
-            if ((lastCharacterWasQuote || !quoteOpened)  && (thisChar == ',' || thisChar == '\n'))
-            {
-                if (fieldNum == 0 && thisChar != ',')
-                {
-                    malformedLine = 1;
-                }
-                else if (fieldNum == 1 && thisChar != '\n')
-                {
-                    malformedLine = 1;
-                }
-
-                break;
-            }
-            else if (lastCharacterWasQuote)
-            {
-                malformedLine = 1;
-                break;
-            }
-            else if (thisChar == '\n')
-            {
-                malformedLine = 1;
-                break;
-            }
-            else
-            {
-                parsedString[i++] = thisChar;
-            }
-        }
-
-        thisChar = getc(fPtr);
-    }
-
-    if (malformedLine || feof(fPtr))
-    {
-        free(parsedString);
-        return NULL;
-    }
-    else
-    {
-        parsedString[i] = '\0';
-        return parsedString;
-    }
 }
 
 int saveToFile(BoardNodePtr startPtr)
@@ -184,63 +270,6 @@ int saveToFile(BoardNodePtr startPtr)
         }
 
         currentListPtr = currentListPtr->nextPtr;
-    }
-
-    fclose(fPtr);
-    return 0;
-}
-
-int readFromFile(char *fileName, BoardNodePtr *startPtr)
-{
-    FILE *fPtr;
-    int lineNum = 0;
-
-    if ((fPtr = fopen(fileName, "r")) == NULL)
-    {
-        printLog('e', "Could not open file.\n");
-        return 1;
-    }
-
-    while(!feof(fPtr))
-    {
-        lineNum++;
-        char *listName = csvParseString(fPtr, 0);
-        char *listItem = csvParseString(fPtr, 1);
-
-        if (listName != NULL && listItem != NULL)
-        {
-            BoardNodePtr listPtr = searchByListName(*startPtr, listName);
-            if (listPtr == NULL)
-            {
-                if (insertList(startPtr, listName) == 0)
-                {
-                    listPtr = *startPtr;
-                }
-                else
-                {
-                    fclose(fPtr);
-                    return 1;
-                }
-            }
-
-            if (insertListItem(&(listPtr->startPtr), listItem) == 1)
-            {
-                fclose(fPtr);
-                return 1;
-            }
-
-            free(listName);
-            free(listItem);
-        }
-        else
-        {
-            if (!feof(fPtr))
-            {
-                printLog('e', "Error parsing CSV on line %d.\n", lineNum);
-                fclose(fPtr);
-                return 2;
-            }
-        }
     }
 
     fclose(fPtr);

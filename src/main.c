@@ -1,7 +1,7 @@
-#include <stdio.h>
+// #include <stdio.h>
 #include "../include/board.h"
 #include "../include/fileio.h"
-#include "../include/input.h"
+// #include "../include/input.h"
 
 int main(void)
 {
@@ -25,9 +25,10 @@ int main(void)
     fngets(listItem, 80);
     insertListItem(&(startPtr->startPtr), listItem); */
     
-    readFromFile("shoppinglist.csv", &startPtr); 
-    displayBoard(startPtr);
-
+    if (readFromFile("example.csv", &startPtr) == 0)
+    {
+        displayBoard(startPtr);
+    }
     // saveToFile(startPtr);
 
     freeBoard(startPtr);
