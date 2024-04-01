@@ -3,5 +3,6 @@
 
 void printLog(char mode, char *fmt, ...);
 void cprintf(int color, char *fmt, ...);
+void displayMenu();
 
 #endif
