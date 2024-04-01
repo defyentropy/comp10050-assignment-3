@@ -59,3 +59,14 @@ void printLog(char mode, char *fmt, ...)
     // tell C that we're done reading the variable arguments
     va_end(args);
 }    
+
+
+void displayMenu() {
+    printf("Menu:\n");
+    printf("1. Display board\n");
+    printf("2. Load board from a file\n");
+    printf("3. Edit list\n");
+    printf("4. Edit Board\n");
+    printf("5. Save board\n");
+    printf("6. Quit\n");
+}
