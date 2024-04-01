@@ -124,6 +124,7 @@ int insertList(BoardNodePtr *startPtr, char listName[80])
         (*startPtr)->prevPtr = newList;
     }
     *startPtr = newList;
+    printf("%p\n", *startPtr);
 
     return 0;
 }
@@ -150,33 +151,10 @@ ListNodePtr searchByListItemName(ListNodePtr startPtr, char *listItem)
     return currentPtr;
 }
 
-int removeList(BoardNodePtr startPtr, char listName[80])
+void removeList(BoardNodePtr targetPtr)
 {
-    if (startPtr == NULL)
-    {
-        printLog('e', "The list is already empty.\n");
-        return 1;
-    }
-
-    BoardNodePtr currentPtr = startPtr;
-    while (currentPtr->nextPtr != NULL && strcmp(currentPtr->listName, listName) != 0)
-    {
-        currentPtr = currentPtr->nextPtr;
-    }
-
-    if (currentPtr->nextPtr == NULL)
-    {
-        printLog('e', "The board does not contain a list with that name. Are you sure you spelled it correctly?\n");
-        return 1;
-    }
-    else
-    {
-        BoardNodePtr prevNode = currentPtr->prevPtr;
-        prevNode->nextPtr = currentPtr->nextPtr;
-        freeListItems(currentPtr->startPtr);
-        free(currentPtr);
-
-        printLog('s', "List successfully deleted.\n");
-        return 0;
-    }
+        BoardNodePtr prevNode = targetPtr->prevPtr;
+        prevNode->nextPtr = targetPtr->nextPtr;
+        freeListItems(targetPtr->startPtr);
+        free(targetPtr);
 }

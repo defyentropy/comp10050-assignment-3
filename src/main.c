@@ -1,35 +1,15 @@
 // #include <stdio.h>
 #include "../include/board.h"
-#include "../include/fileio.h"
+// #include "../include/fileio.h"
 // #include "../include/input.h"
+#include "../include/boardMenu.h"
 
 int main(void)
 {
     BoardNodePtr startPtr = initialiseBoard();
-    /* char listName[80];
-    char listItem[80];
-
-    printf("Enter the new list name:\n");
-    fngets(listName, 80);
-    insertList(&startPtr, listName);
-
-    printf("Enter the new list name:\n");
-    fngets(listName, 80);
-    insertList(&startPtr, listName);
-
-    printf("Enter the new list item:\n");
-    fngets(listItem, 80);
-    insertListItem(&(startPtr->startPtr), listItem);
-
-    printf("Enter the new list item:\n");
-    fngets(listItem, 80);
-    insertListItem(&(startPtr->startPtr), listItem); */
     
-    if (readFromFile("example.csv", &startPtr) == 0)
-    {
-        displayBoard(startPtr);
-    }
-    // saveToFile(startPtr);
+    BoardMenu(&startPtr);
+    displayBoard(startPtr);
 
     freeBoard(startPtr);
 }
