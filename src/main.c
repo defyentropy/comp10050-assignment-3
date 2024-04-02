@@ -63,6 +63,7 @@ int main(void)
                 break;
             case 6:
                 {
+                    freeBoard(&startPtr);
                     return 0;
                 }
         }

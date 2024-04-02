@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../include/input.h"
 #include "../include/board.h"
 #include "../include/logging.h"
 
@@ -158,7 +157,11 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
                 }
             }
 
-            if (insertListItem(&(listPtr->startPtr), listItem) == 1)
+            if (strcmp(listItem, " ") == 0)
+            {
+                break;
+            }
+            else if (insertListItem(&(listPtr->startPtr), listItem) == 1)
             {
                 err = 2;
                 break;
@@ -166,16 +169,16 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
         }
         else if (lineStatus == 1) 
         {
-                printLog('e', "Error parsing CSV on line %d.\n", lineNum);
-                err = 1;
-                break;
+            printLog('e', "Error parsing CSV on line %d.\n", lineNum);
+            err = 1;
+            break;
         }
     }
 
     free(listName);
     free(listItem);
     fclose(fPtr);
-    
+
     if (err == 0)
     {
         printLog('s', "Board imported from file \"%s\".\n", fileName);
@@ -241,7 +244,8 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
     while (currentListPtr != NULL)
     {
         ListNodePtr currentListItemPtr = currentListPtr->startPtr;
-        while (currentListItemPtr != NULL)
+
+        if (currentListItemPtr == NULL)
         {
             if (containsSpecialCharacters(currentListPtr->listName))
             {
@@ -254,21 +258,39 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
                 fprintf(fPtr, "%s,", currentListPtr->listName);
             }
 
-            if (containsSpecialCharacters(currentListItemPtr->listItem))
-            {
-                char *normalisedString = csvNormaliseString(currentListItemPtr->listItem);
-                fprintf(fPtr, "%s\n", normalisedString);
-                free(normalisedString);
-            }
-            else
-            {
-                fprintf(fPtr, "%s\n", currentListItemPtr->listItem);
-            }
-
-            currentListItemPtr = currentListItemPtr->nextPtr;
+            fprintf(fPtr, "\" \"");
         }
+        else
+    {
+            while (currentListItemPtr != NULL)
+            {
+                if (containsSpecialCharacters(currentListPtr->listName))
+                {
+                    char *normalisedString = csvNormaliseString(currentListPtr->listName);
+                    fprintf(fPtr, "%s,", normalisedString);
+                    free(normalisedString);
+                }
+                else
+            {
+                    fprintf(fPtr, "%s,", currentListPtr->listName);
+                }
 
-        currentListPtr = currentListPtr->nextPtr;
+                if (containsSpecialCharacters(currentListItemPtr->listItem))
+                {
+                    char *normalisedString = csvNormaliseString(currentListItemPtr->listItem);
+                    fprintf(fPtr, "%s\n", normalisedString);
+                    free(normalisedString);
+                }
+                else
+            {
+                    fprintf(fPtr, "%s\n", currentListItemPtr->listItem);
+                }
+
+                currentListItemPtr = currentListItemPtr->nextPtr;
+            }
+
+            currentListPtr = currentListPtr->nextPtr;
+        }
     }
     fclose(fPtr);
     

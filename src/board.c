@@ -83,14 +83,14 @@ void freeListItems(ListNodePtr startPtr)
     free(currentPtr);
 }
 
-void freeBoard(BoardNodePtr startPtr)
+void freeBoard(BoardNodePtr *startPtr)
 {
-    if (startPtr == NULL)
+    if (*startPtr == NULL)
     {
         return;
     }
 
-    BoardNodePtr currentPtr = startPtr;
+    BoardNodePtr currentPtr = *startPtr;
     while (currentPtr->nextPtr != NULL)
     {
         currentPtr = currentPtr->nextPtr;
@@ -100,6 +100,8 @@ void freeBoard(BoardNodePtr startPtr)
     }
     freeListItems(currentPtr->startPtr);
     free(currentPtr);
+
+    *startPtr = NULL;
 }
 
 int insertList(BoardNodePtr *startPtr, char listName[80])
@@ -150,17 +152,47 @@ ListNodePtr searchByListItemName(ListNodePtr startPtr, char *listItem)
     return currentPtr;
 }
 
-void removeList(BoardNodePtr targetPtr)
+void removeList(BoardNodePtr *startPtr, BoardNodePtr targetPtr)
 {
-        BoardNodePtr prevNode = targetPtr->prevPtr;
-        prevNode->nextPtr = targetPtr->nextPtr;
+        BoardNodePtr prevList = targetPtr->prevPtr;
+        BoardNodePtr nextList = targetPtr->nextPtr;
+        
+        if (prevList != NULL)
+        {
+            prevList->nextPtr = nextList;
+        }
+        else
+        {
+            *startPtr = nextList;
+        }
+
+        if (nextList != NULL)
+        {
+            nextList->prevPtr = prevList;
+        }
+
         freeListItems(targetPtr->startPtr);
         free(targetPtr);
 }
 
-void removeListItem(ListNodePtr targetPtr)
+void removeListItem(ListNodePtr *startPtr, ListNodePtr targetPtr)
 {
     ListNodePtr prevListItem = targetPtr->prevPtr;
-    prevListItem->nextPtr = targetPtr->nextPtr;
+    ListNodePtr nextListItem = targetPtr->nextPtr;
+
+    if (prevListItem != NULL)
+    {
+        prevListItem->nextPtr = nextListItem;
+    }
+    else
+    {
+        *startPtr = nextListItem;
+    }
+
+    if (nextListItem != NULL)
+    {
+        nextListItem->prevPtr = prevListItem;
+    }
+
     free(targetPtr);
 }

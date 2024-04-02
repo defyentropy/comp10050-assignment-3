@@ -73,7 +73,7 @@ void BoardMenu(BoardNodePtr *startPtr)
                     }
                     else
                     {
-                        removeList(targetPtr);
+                        removeList(startPtr, targetPtr);
                         printLog('s', "List deleted.\n");
                     }
                     break;
@@ -156,7 +156,7 @@ void listMenu(ListNodePtr *startPtr)
                     }
                     else
                     {
-                        removeListItem(targetPtr);
+                        removeListItem(startPtr, targetPtr);
                         printLog('s', "Item deleted.\n");
                     }
                     break;

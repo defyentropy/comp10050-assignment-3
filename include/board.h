@@ -24,9 +24,9 @@ void freeListItems(ListNodePtr startPtr);
 int insertList(BoardNodePtr *startPtr, char listName[80]);
 BoardNodePtr searchByListName(BoardNodePtr startPtr, char *listName);
 ListNodePtr searchByListItemName(ListNodePtr startPtr, char *listItem);
-void removeList(BoardNodePtr targetPtr);
-void removeListItem(ListNodePtr targetPtr);
-void freeBoard(BoardNodePtr startPtr);
+void removeList(BoardNodePtr *startPtr, BoardNodePtr targetPtr);
+void removeListItem(ListNodePtr *startPtr, ListNodePtr targetPtr);
+void freeBoard(BoardNodePtr *startPtr);
 void displayList(ListNodePtr startPtr);
 void displayBoard(BoardNodePtr startPtr);
 
