@@ -11,10 +11,12 @@ int main(void)
     char fileName[80];
     BoardNodePtr startPtr = initialiseBoard();
 
-    displayMenu();
+   printf("\e[1;1H\e[2J");
 
     while (1)
     {
+		 displayMenu();
+
         printf("Enter your choice: ");
         do {
             getNum(&choice);
@@ -24,13 +26,21 @@ int main(void)
         {
             case 1:
                 {
+                    printf("\e[1;1H\e[2J"); 
                     displayBoard(startPtr);
                     break;
                 }
             case 2:
                 {
-                    printf("Enter the name of the file to load:\n");
-                    fngets(fileName, 80);
+                    printf("\nEnter the name of the file to load: ");
+                    if((fngets(fileName, 80)) == 1){    
+						printLog('i', "You Cancelled\n\n"); 
+						enterToContinue();
+						printf("\e[1;1H\e[2J");     
+                        break;
+                    }
+
+                    printf("\e[1;1H\e[2J");
                     readFromFile(fileName, &startPtr);
                     break;
                 }
@@ -38,28 +48,47 @@ int main(void)
                 {
                     char listName[80];
                     BoardNodePtr targetPtr;
-                    printf("Enter the name of the list to edit:\n");
-                    fngets(listName, 80);
+                    printf("\nEnter the name of the list to edit: ");
+                    if((fngets(listName, 80)) == 1){ 
+						printLog('i', "You Cancelled\n\n");
+						enterToContinue();
+						printf("\e[1;1H\e[2J");             
+                        break;
+                    }
 
                     if ((targetPtr = searchByListName(startPtr, listName)) == NULL)
                     {
-                        printLog('w', "That list doesn't exist. Are you sure you spelled it right?\n");
+                        printLog('w', "That list doesn't exist. Are you sure you spelled it right?\n\n");
+						enterToContinue();
+						printf("\e[1;1H\e[2J");
                     }
                     else
                     {
+                        printf("\e[1;1H\e[2J");
+                        displayBoard(startPtr);
                         listMenu(&(targetPtr->startPtr));
                     }
                     break;
                 }
             case 4:
                 {
+                    printf("\e[1;1H\e[2J");
+                    displayBoard(startPtr);
                     BoardMenu(&startPtr); 
                     break;
                 }
             case 5:
-                printf("Enter the name of the file to save to:\n");
-                fngets(fileName, 80);
+                printf("\nEnter the name of the file to save to: ");
+                if((fngets(fileName, 80)) == 1){       
+					printLog('i', "You Cancelled\n\n"); 
+					enterToContinue();
+					printf("\e[1;1H\e[2J");      
+                    break;
+                    }
+                printf("\e[1;1H\e[2J"); 
+                printLog('s', "File saved successfully.\n\n");
                 saveToFile(fileName, startPtr);
+
                 break;
             case 6:
                 {
@@ -68,3 +97,5 @@ int main(void)
         }
     }
 }
+
+

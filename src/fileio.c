@@ -133,7 +133,7 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
 
     if ((fPtr = fopen(fileName, "r")) == NULL)
     {
-        printLog('e', "Could not open file.\n");
+        printLog('e', "Could not open file.\n\n");
         return 1;
     }
 
@@ -166,7 +166,7 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
         }
         else if (lineStatus == 1) 
         {
-                printLog('e', "Error parsing CSV on line %d.\n", lineNum);
+                printLog('e', "Error parsing CSV on line %d.\n\n", lineNum);
                 err = 1;
                 break;
         }
@@ -178,7 +178,7 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
     
     if (err == 0)
     {
-        printLog('s', "Board imported from file \"%s\".\n", fileName);
+        printLog('s', "Board imported from file \"%s\".\n\n", fileName);
     }
 
     return err;
@@ -226,14 +226,14 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
 {
     if (startPtr == NULL)
     {
-        printLog('i', "The board is empty. There is nothing to write to file.\n");
+        printLog('i', "The board is empty. There is nothing to write to file.\n\n");
         return 1;
     }
 
     FILE *fPtr;
     if ((fPtr = fopen(fileName, "w")) == NULL)
     {
-        printLog('e', "Could not open file.\n");
+        printLog('e', "Could not open file.\n\n");
         return 2;
     }
 
