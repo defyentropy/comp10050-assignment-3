@@ -2,7 +2,7 @@
 #include "../include/board.h"
 #include "../include/fileio.h"
 #include "../include/input.h"
-
+#include "../include/logging.h"
 
 
 int main(void)
@@ -29,7 +29,7 @@ int main(void)
     
     // Main Menu Display
 
-	int choice = 0; // Initialize choice to a value outside the menu options
+	long choice = 0; // Initialize choice to a value outside the menu options
 
 
 	        displayMenu();
@@ -84,4 +84,5 @@ int main(void)
 	    return 0;
 	}
 
+>>>>>>> main
 

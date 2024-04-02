@@ -57,7 +57,7 @@ int csvParseString(FILE *fPtr, char *dest, char *thisChar)
                 malformedField = 1;
                 break;
             }
-            else if (charsRead == 1 && *thisChar == ' ')
+            else if (!quoteOpened && *thisChar == ' ')
             {
                 malformedField = 1;
                 break;
