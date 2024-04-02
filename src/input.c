@@ -141,3 +141,12 @@ int  getYesOrNo(void)
         return 0;
     }
 }
+
+
+
+void enterToContinue(void){
+    printf("Enter to Continue: ");
+    char dummy[1024]; 
+    fngets(dummy, sizeof(dummy));
+    
+}
