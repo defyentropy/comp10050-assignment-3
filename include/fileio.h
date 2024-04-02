@@ -3,7 +3,7 @@
 
 #include "board.h"
 
-int saveToFile(BoardNodePtr startPtr);
+int saveToFile(char *fileName, BoardNodePtr startPtr);
 int readFromFile(char *fileName, BoardNodePtr *startPtr);
 
 #endif

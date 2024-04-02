@@ -124,7 +124,6 @@ int insertList(BoardNodePtr *startPtr, char listName[80])
         (*startPtr)->prevPtr = newList;
     }
     *startPtr = newList;
-    printf("%p\n", *startPtr);
 
     return 0;
 }
@@ -157,4 +156,11 @@ void removeList(BoardNodePtr targetPtr)
         prevNode->nextPtr = targetPtr->nextPtr;
         freeListItems(targetPtr->startPtr);
         free(targetPtr);
+}
+
+void removeListItem(ListNodePtr targetPtr)
+{
+    ListNodePtr prevListItem = targetPtr->prevPtr;
+    prevListItem->nextPtr = targetPtr->nextPtr;
+    free(targetPtr);
 }
