@@ -117,7 +117,7 @@ void listMenu(ListNodePtr *startPtr)
                 {
                     printf("Enter the name of the item to edit:\n");
                     fngets(target, 80);
-                    targetPtr = searchByListName(*startPtr, target);
+                    targetPtr = searchByListItemName(*startPtr, target);
 
                     if (targetPtr == NULL)
                     {
@@ -137,7 +137,7 @@ void listMenu(ListNodePtr *startPtr)
                 {
                     printf("Enter the name of the new item:\n");
                     fngets(target, 80);
-                    if (insertList(startPtr, target) == 0)
+                    if (insertListItem(startPtr, target) == 0)
                     {
                         printLog('s', "New item created.\n");
                     }
@@ -148,7 +148,7 @@ void listMenu(ListNodePtr *startPtr)
                 {
                     printf("Enter the name of the item to delete:\n");
                     fngets(target, 80);
-                    targetPtr = searchByListName(*startPtr, target);
+                    targetPtr = searchByListItemName(*startPtr, target);
 
                     if (targetPtr == NULL)
                     {
@@ -156,7 +156,7 @@ void listMenu(ListNodePtr *startPtr)
                     }
                     else
                     {
-                        removeList(targetPtr);
+                        removeListItem(targetPtr);
                         printLog('s', "Item deleted.\n");
                     }
                     break;

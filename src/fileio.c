@@ -175,6 +175,11 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
     free(listName);
     free(listItem);
     fclose(fPtr);
+    
+    if (err == 0)
+    {
+        printLog('s', "Board imported from file \"%s\".\n", fileName);
+    }
 
     return err;
 }
@@ -217,7 +222,7 @@ char *csvNormaliseString(char *plainString)
     return normalisedString;
 }
 
-int saveToFile(BoardNodePtr startPtr)
+int saveToFile(char *fileName, BoardNodePtr startPtr)
 {
     if (startPtr == NULL)
     {
@@ -225,13 +230,7 @@ int saveToFile(BoardNodePtr startPtr)
         return 1;
     }
 
-    char fileName[84];
     FILE *fPtr;
-
-    printf("What is the name of the file you want to write to?\n");
-    printf("(Please do not include the filename)\n");
-    fngets(fileName, 80);
-
     if ((fPtr = fopen(fileName, "w")) == NULL)
     {
         printLog('e', "Could not open file.\n");
@@ -271,7 +270,7 @@ int saveToFile(BoardNodePtr startPtr)
 
         currentListPtr = currentListPtr->nextPtr;
     }
-
     fclose(fPtr);
+    
     return 0;
 }
