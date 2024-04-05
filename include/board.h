@@ -28,6 +28,6 @@ void removeList(BoardNodePtr *startPtr, BoardNodePtr targetPtr);
 void removeListItem(ListNodePtr *startPtr, ListNodePtr targetPtr);
 void freeBoard(BoardNodePtr *startPtr);
 void displayList(ListNodePtr startPtr);
-void displayBoard(BoardNodePtr startPtr);
+void displayBoard(BoardNodePtr startPtr, int displayExpanded);
 
 #endif

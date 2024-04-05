@@ -258,10 +258,10 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
                 fprintf(fPtr, "%s,", currentListPtr->listName);
             }
 
-            fprintf(fPtr, "\" \"");
+            fprintf(fPtr, "\" \"\n");
         }
         else
-    {
+        {
             while (currentListItemPtr != NULL)
             {
                 if (containsSpecialCharacters(currentListPtr->listName))
@@ -271,7 +271,7 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
                     free(normalisedString);
                 }
                 else
-            {
+                {
                     fprintf(fPtr, "%s,", currentListPtr->listName);
                 }
 
@@ -282,15 +282,15 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
                     free(normalisedString);
                 }
                 else
-            {
+                {
                     fprintf(fPtr, "%s\n", currentListItemPtr->listItem);
                 }
 
                 currentListItemPtr = currentListItemPtr->nextPtr;
             }
-
-            currentListPtr = currentListPtr->nextPtr;
         }
+        
+        currentListPtr = currentListPtr->nextPtr;
     }
     fclose(fPtr);
     

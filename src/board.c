@@ -26,20 +26,29 @@ void displayList(ListNodePtr startPtr)
     }
 }
 
-void displayBoard(BoardNodePtr startPtr)
+void displayBoard(BoardNodePtr startPtr, int displayExpanded)
 {
     if (startPtr == NULL)
     {
-        printf("The board is currently empty.\n");
+        printf("The board is currently empty.\n\n");
         return;
     }
 
     BoardNodePtr currentPtr = startPtr;
     while (currentPtr != NULL)
     {
-        cprintf(37 , "%s:\n", currentPtr->listName);
-        displayList(currentPtr->startPtr);
-        printf("\n");
+        cprintf(37 , "%s", currentPtr->listName);
+
+        if (displayExpanded != 0)
+        {
+            printf(":\n");
+            displayList(currentPtr->startPtr);
+            printf("\n");
+        }
+        else
+        {
+            printf("\n");
+        }
 
         currentPtr = currentPtr->nextPtr;
     }
