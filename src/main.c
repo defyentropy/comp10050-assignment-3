@@ -95,7 +95,7 @@ int main(void)
                     break;
                 }
             case 5:
-                printf("\nEnter the name of the file to save to, or leave blank to cancel: ");
+                printf("Enter the name of the file to save to, or leave blank to cancel: ");
                 
                 if ((fngets(fileName, 80)) == 1)
                 {       

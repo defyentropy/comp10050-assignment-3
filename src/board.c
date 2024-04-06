@@ -30,7 +30,7 @@ void displayBoard(BoardNodePtr startPtr, int displayExpanded)
 {
     if (startPtr == NULL)
     {
-        printf("The board is currently empty.\n\n");
+        printLog('i', "The board is currently empty.\n\n");
         return;
     }
 

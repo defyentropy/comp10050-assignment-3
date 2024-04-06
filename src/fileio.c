@@ -70,6 +70,11 @@ int csvParseString(FILE *fPtr, char *dest, char *thisChar)
         *thisChar = fgetc(fPtr);
         charsRead++;
     }
+
+    if (charsWritten > 79)
+    {
+        charsWritten--;    
+    }
     dest[charsWritten++] = '\0';
 
     if (feof(fPtr))
@@ -241,6 +246,11 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
     }
 
     BoardNodePtr currentListPtr = startPtr;
+    while (currentListPtr->nextPtr != NULL)
+    {
+        currentListPtr = currentListPtr->nextPtr;
+    }
+        
     while (currentListPtr != NULL)
     {
         ListNodePtr currentListItemPtr = currentListPtr->startPtr;
@@ -262,6 +272,11 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
         }
         else
         {
+            while (currentListItemPtr->nextPtr != NULL)
+            {
+                currentListItemPtr = currentListItemPtr->nextPtr;
+            }
+
             while (currentListItemPtr != NULL)
             {
                 if (containsSpecialCharacters(currentListPtr->listName))
@@ -286,12 +301,13 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
                     fprintf(fPtr, "%s\n", currentListItemPtr->listItem);
                 }
 
-                currentListItemPtr = currentListItemPtr->nextPtr;
+                currentListItemPtr = currentListItemPtr->prevPtr;
             }
         }
         
-        currentListPtr = currentListPtr->nextPtr;
+        currentListPtr = currentListPtr->prevPtr;
     }
+
     fclose(fPtr);
     
     return 0;
