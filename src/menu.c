@@ -4,27 +4,28 @@
 #include "../include/input.h"
 #include "../include/logging.h"
 
-// Board Menu Function
-
-void BoardMenu(BoardNodePtr *startPtr)
+void boardMenu(BoardNodePtr *startPtr)
 {
     long option;
 
-    printf("\n\nOptions:\n");
-    printf("1. Edit the name of a list\n");
-    printf("2. Add a new list\n");
-    printf("3. Delete a list\n");
-    printf("4. Return to main menu\n");
-
     while (1)
     {
-        printf("Enter your option: ");
+        clearScreen();
+        displayBoard(*startPtr, 0);
         
+        printf("\nOptions:\n");
+        printf("1. Edit the name of a list\n");
+        printf("2. Add a new list\n");
+        printf("3. Delete a list\n");
+        printf("4. Return to main menu\n");
+
         do
         {
+            printf("\nEnter your option (1-4): ");
             getNum(&option);
-        } while (option < 1 && option > 4);
+        } while (option < 1 || option > 4);
 
+        clearScreen();
         switch (option)
         {
             char target[80];
@@ -32,106 +33,115 @@ void BoardMenu(BoardNodePtr *startPtr)
 
             case 1:
                 {
-                    printf("\nEnter the name of the list to edit: ");
-                    if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
-					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                         break;
-                    }
-                    targetPtr = searchByListName(*startPtr, target);
+                    while (1)
+                    {
+                        printf("Enter the name of the list to edit, or leave blank to cancel: ");
 
-                    if (targetPtr == NULL)
-                    {
-                        printLog('i', "Can't find that list. Have you spelled it right?\n");
+                        if((fngets(target, 80)) == 1){       
+                            printLog('i', "List edit cancelled.\n\n"); 
+                            enterToContinue();
+                            break;
+                        }
+                        else if ((targetPtr = searchByListName(*startPtr, target)) == NULL)
+                        {
+                            printLog('i', "Can't find that list. Have you spelled it right?\n");
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
+
+                    printf("\nEnter new name for the list \"%s\": ", target);
+                    while (fngets(target, 80) == 1)
                     {
-                        printf("\nEnter new name for the list \"%s\":\n", target);
-                        fngets(target, 80);       
-                        strcpy(targetPtr->listName, target);
-                        printf("\e[1;1H\e[2J");
-                        // < Correct Call to displayBoard >
-                        printLog('s', "List name changed.\n\n");
-                        // < Correct Call to boardMenu >
+                        continue;
                     }
+                    strcpy(targetPtr->listName, target);
+
+                    printLog('s', "List name changed.\n\n");
+                    enterToContinue();
                     break;
                 }
 
             case 2:
                 {
-                    printf("\nEnter the name of the new list: ");
-                    if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
-					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                         break;
+                    printf("Enter the name of the new list: ");
+
+                    if ((fngets(target, 80)) == 1)
+                    {       
+                        printLog('i', "New list creation cancelled.\n\n"); 
+                        enterToContinue();
+                        break;
                     }
-                    if (insertList(startPtr, target) == 0)
+                    else if (insertList(startPtr, target) == 0)
                     {
-                        printf("\e[1;1H\e[2J");
-                        // < Correct Call to displayBoard >
                         printLog('s', "New list created.\n\n");
-                        // < Correct Call to boardMenu >
+                        enterToContinue();
                     }
+
                     break;
                 }
 
             case 3:
                 {
-                    printf("\nEnter the name of the list to delete: ");
-                    if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
-					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                         break;
-                    }
-                    targetPtr = searchByListName(*startPtr, target);
+                    while (1)
+                    {
+                        printf("Enter the name of the list to delete: ");
 
-                    if (targetPtr == NULL)
-                    {
-                        printLog('i', "Can't find that list. Have you spelled it right?\n");
+                        if((fngets(target, 80)) == 1){       
+                            printLog('i', "You Cancelled\n\n"); 
+                            enterToContinue();
+                            break;
+                        }
+                        else if ((targetPtr = searchByListName(*startPtr, target)) == NULL)
+                        {
+                            printLog('i', "Can't find that list. Are you sure you spelled it right?\n");
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
+                    
+                    if (target[0] != '\0')
                     {
-                        removeList(targetPtr);
-                        printf("\e[1;1H\e[2J");
-                        // < Correct Call to displayBoard >
+                        removeList(startPtr, targetPtr);    
                         printLog('s', "List deleted.\n\n");
-                        // < Correct Call to Board Menu >
+                        enterToContinue();
                     }
                     break;
                 }
+
             case 4:
                 {
-                    printf("\e[1;1H\e[2J");
                     return;
                 }
         }
     }
 }
 
-
-// List Menu Function
-
-void listMenu(ListNodePtr *startPtr)
+void listMenu(BoardNodePtr nodePtr)
 {
     long option;
 
-    printf("\n\nOptions:\n");
-    printf("1. Edit the name of an item\n");
-    printf("2. Add a new item\n");
-    printf("3. Delete an item\n");
-    printf("4. Return to main menu\n");
-
     while (1)
     {
-        printf("Enter your option: ");
-        
+        clearScreen();
+        cprintf(37, "%s:\n", nodePtr->listName);
+        displayList(nodePtr->startPtr);
+
+        printf("\nOptions:\n");
+        printf("1. Edit the name of an item\n");
+        printf("2. Add a new item\n");
+        printf("3. Delete an item\n");
+        printf("4. Return to main menu\n");
+
         do
         {
+            printf("\nEnter your option (1-4): ");
             getNum(&option);
-        } while (option < 1 && option > 4);
+        } while (option < 1 || option > 4);
 
         switch (option)
         {
@@ -140,85 +150,88 @@ void listMenu(ListNodePtr *startPtr)
 
             case 1:
                 {
-                    printf("\nEnter the name of the item to edit: ");
-                    if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
-					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                        break;
-                        }
-                    targetPtr = searchByListItemName(*startPtr, target);
-
-                    if (targetPtr == NULL)
+                    while (1)
                     {
-                        printLog('i', "Can't find that item. Have you spelled it right?\n");
+                        printf("\nEnter the name of the item to edit, or leave blank to cancel: ");
+                        if ((fngets(target, 80)) == 1)
+                        {       
+                            printLog('i', "Item edit cancelled.\n\n"); 
+                            enterToContinue();
+                            break;
+                        }
+                        else if ((targetPtr = searchByListItemName(nodePtr->startPtr, target)) == NULL)
+                        {
+                            printLog('i', "Can't find that item. Are you sure you spelled it right?\n");
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
+
+                    if (target[0] != '\0')
                     {
-                        printf("\nEnter new name for the item \"%s\": ", target);
-                        
-                        if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
-					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                        break;
+                        printf("\nEnter new name for item \"%s\": ", target);
+                        while (fngets(target, 80) == 1)
+                        {
+                            continue;
                         }
+
                         strcpy(targetPtr->listItem, target);
-                        printf("\e[1;1H\e[2J");
-                        // < Correct Call to displayBoard >
                         printLog('s', "Item name changed.\n\n");
-                        // < Correct Call to listMenu >
+                        enterToContinue();
                     }
                     break;
                 }
 
             case 2:
                 {
-                    printf("\nEnter the name of the new item: ");
-                    if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
+                    printf("\nEnter the name of the new item, or leave blank to cancel: ");
+                    if ((fngets(target, 80)) == 1)
+                    {       
+					    printLog('i', "Adding new item cancelled.\n\n"); 
 					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                         break;
+                        break;
                     }
-                    if (insertListItem(startPtr, target) == 0)
+                    else if (insertListItem(&(nodePtr->startPtr), target) == 0)
                     {
-                        printf("\e[1;1H\e[2J");
-                        // < Correct Call to displayBoard >
                         printLog('s', "New item created.\n\n");
-                        // < Correct Call to listMenu >
+                        enterToContinue();
                     }
                     break;
                 }
 
             case 3:
                 {
-                    printf("\nEnter the name of the item to delete: ");
-                    if((fngets(target, 80)) == 1){       
-					    printLog('i', "You Cancelled\n\n"); 
-					    enterToContinue();
-					    printf("\e[1;1H\e[2J");      
-                         break;
+                    while (1)
+                    {
+                        printf("\nEnter the name of the item to delete, or leave blank to cancel: ");
+                        if ((fngets(target, 80)) == 1)
+                        {       
+                            printLog('i', "Delete item cancelled.\n\n"); 
+                            enterToContinue();
+                            break;
+                        }
+                        else if ((targetPtr = searchByListItemName(nodePtr->startPtr, target)) == NULL)
+                        {
+                            printLog('i', "Can't find that item. Have you spelled it right?\n");
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    targetPtr = searchByListItemName(*startPtr, target);
 
-                    if (targetPtr == NULL)
+                    if (target[0] != '\0')
                     {
-                        printLog('i', "Can't find that item. Have you spelled it right?\n");
-                    }
-                    else
-                    {
-                        removeListItem(targetPtr);
-                        printf("\e[1;1H\e[2J");
-                        // < Correct Call to displayBoard >
+                        removeListItem(&(nodePtr->startPtr), targetPtr);
                         printLog('s', "Item deleted.\n\n");
-                        // < Correct Call to listMenu >
+                        enterToContinue();
                     }
                     break;
                 }
             case 4:
                 {
-                    printf("\e[1;1H\e[2J");
                     return;
                 }
         }

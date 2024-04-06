@@ -18,7 +18,6 @@ int fngets(char *dest, int length)
 
     while (true)
     {
-        printf("> ");
         fgets(inputBuffer, length + 1, stdin);
 
         // strchr is used to search for the location of a character in a string
@@ -145,8 +144,8 @@ int  getYesOrNo(void)
 
 
 void enterToContinue(void){
-    printf("Enter to Continue: ");
+    printf("Press <ENTER> to continue: ");
     char dummy[1024]; 
     fngets(dummy, sizeof(dummy));
-    
+    return; 
 }

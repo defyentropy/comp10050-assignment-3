@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../include/input.h"
 #include "../include/board.h"
 #include "../include/logging.h"
 
@@ -70,6 +69,11 @@ int csvParseString(FILE *fPtr, char *dest, char *thisChar)
 
         *thisChar = fgetc(fPtr);
         charsRead++;
+    }
+
+    if (charsWritten > 79)
+    {
+        charsWritten--;    
     }
     dest[charsWritten++] = '\0';
 
@@ -158,7 +162,11 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
                 }
             }
 
-            if (insertListItem(&(listPtr->startPtr), listItem) == 1)
+            if (strcmp(listItem, " ") == 0)
+            {
+                break;
+            }
+            else if (insertListItem(&(listPtr->startPtr), listItem) == 1)
             {
                 err = 2;
                 break;
@@ -166,7 +174,7 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
         }
         else if (lineStatus == 1) 
         {
-                printLog('e', "Error parsing CSV on line %d.\n\n", lineNum);
+               printLog('e', "Error parsing CSV on line %d.\n\n", lineNum);
                 err = 1;
                 break;
         }
@@ -175,7 +183,7 @@ int readFromFile(char *fileName, BoardNodePtr *startPtr)
     free(listName);
     free(listItem);
     fclose(fPtr);
-    
+
     if (err == 0)
     {
         printLog('s', "Board imported from file \"%s\".\n\n", fileName);
@@ -238,10 +246,16 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
     }
 
     BoardNodePtr currentListPtr = startPtr;
+    while (currentListPtr->nextPtr != NULL)
+    {
+        currentListPtr = currentListPtr->nextPtr;
+    }
+        
     while (currentListPtr != NULL)
     {
         ListNodePtr currentListItemPtr = currentListPtr->startPtr;
-        while (currentListItemPtr != NULL)
+
+        if (currentListItemPtr == NULL)
         {
             if (containsSpecialCharacters(currentListPtr->listName))
             {
@@ -254,22 +268,46 @@ int saveToFile(char *fileName, BoardNodePtr startPtr)
                 fprintf(fPtr, "%s,", currentListPtr->listName);
             }
 
-            if (containsSpecialCharacters(currentListItemPtr->listItem))
-            {
-                char *normalisedString = csvNormaliseString(currentListItemPtr->listItem);
-                fprintf(fPtr, "%s\n", normalisedString);
-                free(normalisedString);
-            }
-            else
-            {
-                fprintf(fPtr, "%s\n", currentListItemPtr->listItem);
-            }
-
-            currentListItemPtr = currentListItemPtr->nextPtr;
+            fprintf(fPtr, "\" \"\n");
         }
+        else
+        {
+            while (currentListItemPtr->nextPtr != NULL)
+            {
+                currentListItemPtr = currentListItemPtr->nextPtr;
+            }
 
-        currentListPtr = currentListPtr->nextPtr;
+            while (currentListItemPtr != NULL)
+            {
+                if (containsSpecialCharacters(currentListPtr->listName))
+                {
+                    char *normalisedString = csvNormaliseString(currentListPtr->listName);
+                    fprintf(fPtr, "%s,", normalisedString);
+                    free(normalisedString);
+                }
+                else
+                {
+                    fprintf(fPtr, "%s,", currentListPtr->listName);
+                }
+
+                if (containsSpecialCharacters(currentListItemPtr->listItem))
+                {
+                    char *normalisedString = csvNormaliseString(currentListItemPtr->listItem);
+                    fprintf(fPtr, "%s\n", normalisedString);
+                    free(normalisedString);
+                }
+                else
+                {
+                    fprintf(fPtr, "%s\n", currentListItemPtr->listItem);
+                }
+
+                currentListItemPtr = currentListItemPtr->prevPtr;
+            }
+        }
+        
+        currentListPtr = currentListPtr->prevPtr;
     }
+
     fclose(fPtr);
     
     return 0;

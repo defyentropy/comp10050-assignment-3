@@ -3,7 +3,7 @@
 
 #include "../include/board.h"
 
-void BoardMenu(BoardNodePtr *startPtr);
-void listMenu(ListNodePtr *startPtr);
+void boardMenu(BoardNodePtr *startPtr);
+void listMenu(BoardNodePtr nodePtr);
 
 #endif
