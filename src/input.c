@@ -141,8 +141,10 @@ int  getYesOrNo(void)
     }
 }
 
-
-
+// simulates requiring the user to press enter to continue by
+// waiting for a large dummy input, then doing nothing with it
+// and just continuing the flow of execution from wherever the
+// function was called
 void enterToContinue(void){
     printf("Press <ENTER> to continue: ");
     char dummy[1024]; 

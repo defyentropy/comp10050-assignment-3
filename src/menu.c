@@ -121,7 +121,7 @@ void boardMenu(BoardNodePtr *startPtr)
     }
 }
 
-void listMenu(BoardNodePtr nodePtr)
+void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
 {
     long option;
 
@@ -135,13 +135,14 @@ void listMenu(BoardNodePtr nodePtr)
         printf("1. Edit the name of an item\n");
         printf("2. Add a new item\n");
         printf("3. Delete an item\n");
-        printf("4. Return to main menu\n");
+        printf("4. Move an item to a different list\n");
+        printf("5. Return to main menu\n");
 
         do
         {
-            printf("\nEnter your option (1-4): ");
+            printf("\nEnter your option (1-5): ");
             getNum(&option);
-        } while (option < 1 || option > 4);
+        } while (option < 1 || option > 5);
 
         switch (option)
         {
@@ -230,7 +231,86 @@ void listMenu(BoardNodePtr nodePtr)
                     }
                     break;
                 }
+
             case 4:
+                {
+                    char destBoard[80];
+                    BoardNodePtr destBoardPtr;
+
+                    while(1)
+                    {
+                        printf("\nEnter the name of the item to move, or leave blank to cancel: ");
+                        if (fngets(target, 80) == 1)
+                        {
+                            printLog('i', "Move item cancelled.\n\n");
+                            enterToContinue();
+                            break;
+                        }
+                        else if ((targetPtr = searchByListItemName(nodePtr->startPtr, target)) == NULL)
+                        {
+                            printLog('i', "Can't find that item. Are you sure you spelled it right?\n");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (target[0] == '\0')
+                    {
+                        break;
+                    }
+
+                    while (1)
+                    {
+                        printf("\nEnter the name of list to move this item to, or leave blank to cancel: ");
+                        if (fngets(destBoard, 80) == 1)
+                        {
+                            printLog('i', "Move item cancelled.\n\n");
+                            enterToContinue();
+                            break;
+                        }
+                        else if ((destBoardPtr = searchByListName(*startPtr, destBoard)) == NULL)
+                        {
+                            printLog('i', "Can't find that list. Are you sure you spelled it right?\n");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (destBoard[0] == '\0')
+                    {
+                        break;
+                    }
+                
+                    if (targetPtr->prevPtr != NULL)
+                    {
+                        targetPtr->prevPtr->nextPtr = targetPtr->nextPtr;
+                    }
+                    else
+                    {
+                        nodePtr->startPtr = targetPtr->nextPtr;     
+                    }
+
+                    if (targetPtr->nextPtr != NULL)
+                    {
+                        targetPtr->nextPtr->prevPtr = targetPtr->prevPtr;
+                    }
+
+                    targetPtr->nextPtr = destBoardPtr->startPtr;
+                    if (destBoardPtr->startPtr != NULL)
+                    {
+                        destBoardPtr->startPtr->prevPtr = targetPtr;
+                    }
+                    destBoardPtr->startPtr = targetPtr;
+
+                    printLog('s', "Item successfully moved.\n");
+                    enterToContinue();
+                    break;
+                }
+            case 5:
                 {
                     return;
                 }

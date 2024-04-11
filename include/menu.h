@@ -4,6 +4,6 @@
 #include "../include/board.h"
 
 void boardMenu(BoardNodePtr *startPtr);
-void listMenu(BoardNodePtr nodePtr);
+void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr);
 
 #endif
