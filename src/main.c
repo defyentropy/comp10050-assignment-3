@@ -14,16 +14,21 @@ int main(void)
     char fileName[80];
     BoardNodePtr startPtr = initialiseBoard();
 
+    // loop until the user manually exits the application using the 6th
+    // option
     while (1)
     {
         clearScreen();
 		displayMenu();
 
-        do {
+        do
+        {
             printf("\nEnter your choice (1-6): ");
             getNum(&choice);
         } while(choice < 1 || choice > 6);
 
+        // remove the main menu from the screen, because other menus might
+        // have to be displayed
         clearScreen(); 
         switch (choice)
         {    
@@ -35,6 +40,11 @@ int main(void)
                 }
             case 2:
                 {
+                    // repeatedly ask for input until the user either enters
+                    // a valid input or they enter a blank line, indicating
+                    // that they would like to cancel the operation
+                    // this is an input pattern that will be repeated many,
+                    // many times throughout this application
                     while (1)
                     {
                         printf("Enter the name of the file to load, or leave blank to cancel: ");
@@ -58,6 +68,9 @@ int main(void)
                     char listName[80];
                     BoardNodePtr targetPtr;
 
+                    // display the board in a condensed format (just the list
+                    // names) so users don't have to struggle to remember the 
+                    // names of the lists they're working with
                     displayBoard(startPtr, 0);
 
                     while (1)
@@ -79,11 +92,12 @@ int main(void)
                         }
                     }
 
+                    // if they haven't cancelled
                     if (listName[0] != '\0')
                     {
                         clearScreen();
                         cprintf(37, "%s:\n", targetPtr->listName);
-                        listMenu(targetPtr);
+                        listMenu(targetPtr, &startPtr);
                     }
 
                     break;
