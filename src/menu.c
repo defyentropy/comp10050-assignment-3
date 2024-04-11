@@ -8,10 +8,15 @@ void boardMenu(BoardNodePtr *startPtr)
 {
     long option;
 
+    // Loops until the user chooses to exit the board menu with option 4
+
     while (1)
     {
         clearScreen();
-        displayBoard(*startPtr, 0);
+
+        // Displays a board of just the names of each list
+
+        displayBoard(*startPtr, 0);         
         
         printf("\nOptions:\n");
         printf("1. Edit the name of a list\n");
@@ -25,6 +30,9 @@ void boardMenu(BoardNodePtr *startPtr)
             getNum(&option);
         } while (option < 1 || option > 4);
 
+        // Clears the screen to allow the board to update once the choice
+        // being executed in the switch statement has been run
+
         clearScreen();
         switch (option)
         {
@@ -35,13 +43,18 @@ void boardMenu(BoardNodePtr *startPtr)
                 {
                     while (1)
                     {
+                        // Repeatedly runs until user enters a valid name i.e. an existing list name
+
                         printf("Enter the name of the list to edit, or leave blank to cancel: ");
 
                         if((fngets(target, 80)) == 1){       
                             printLog('i', "List edit cancelled.\n\n"); 
-                            enterToContinue();
+                            enterToContinue();              
                             break;
                         }
+                        // Searches for the users input, and if it can not be found, an info warning is
+                        // printed, prompting the user to check their input was valid
+
                         else if ((targetPtr = searchByListName(*startPtr, target)) == NULL)
                         {
                             printLog('i', "Can't find that list. Have you spelled it right?\n");
@@ -51,6 +64,8 @@ void boardMenu(BoardNodePtr *startPtr)
                             break;
                         }
                     }
+
+                    // If the input was valid, the user is asked to enter the new name
 
                     printf("\nEnter new name for the list \"%s\": ", target);
                     while (fngets(target, 80) == 1)
@@ -74,6 +89,9 @@ void boardMenu(BoardNodePtr *startPtr)
                         enterToContinue();
                         break;
                     }
+
+                    // Inserts a new list which the user named onto the board
+
                     else if (insertList(startPtr, target) == 0)
                     {
                         printLog('s', "New list created.\n\n");
@@ -85,6 +103,8 @@ void boardMenu(BoardNodePtr *startPtr)
 
             case 3:
                 {
+                    // Repeatedly runs until user enters a valid name i.e. an existing list name, similarly to case 1
+
                     while (1)
                     {
                         printf("Enter the name of the list to delete: ");
@@ -94,6 +114,9 @@ void boardMenu(BoardNodePtr *startPtr)
                             enterToContinue();
                             break;
                         }
+                        // Searches for the users input, and if it can not be found, an info warning is
+                        // printed, prompting the user to check their input was valid
+
                         else if ((targetPtr = searchByListName(*startPtr, target)) == NULL)
                         {
                             printLog('i', "Can't find that list. Are you sure you spelled it right?\n");
@@ -103,11 +126,12 @@ void boardMenu(BoardNodePtr *startPtr)
                             break;
                         }
                     }
+                     // If the input was valid, the specified list is removed from the board
                     
                     if (target[0] != '\0')
                     {
                         removeList(startPtr, targetPtr);    
-                        printLog('s', "List deleted.\n\n");
+                        printLog('s', "List deleted.\n\n");     // Success message displayed notifying the user
                         enterToContinue();
                     }
                     break;
@@ -115,7 +139,7 @@ void boardMenu(BoardNodePtr *startPtr)
 
             case 4:
                 {
-                    return;
+                    return;     // Exits from the board menu while loop, returning the user to the main menu
                 }
         }
     }
@@ -127,8 +151,12 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
 
     while (1)
     {
+
+        // Clears screen of previous menus
         clearScreen();
+        // Displays the chosen list name in light blue
         cprintf(37, "%s:\n", nodePtr->listName);
+        // Displays the items in that list bellow
         displayList(nodePtr->startPtr);
 
         printf("\nOptions:\n");
@@ -153,6 +181,8 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                 {
                     while (1)
                     {
+                        // Repeatedly runs until user enters a valid name i.e. an existing item name
+
                         printf("\nEnter the name of the item to edit, or leave blank to cancel: ");
                         if ((fngets(target, 80)) == 1)
                         {       
@@ -160,6 +190,9 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                             enterToContinue();
                             break;
                         }
+                        // Searches for the users input, and if it can not be found, an info warning is
+                        // printed, prompting the user to check their input was valid
+
                         else if ((targetPtr = searchByListItemName(nodePtr->startPtr, target)) == NULL)
                         {
                             printLog('i', "Can't find that item. Are you sure you spelled it right?\n");
@@ -170,6 +203,8 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                         }
                     }
 
+                     // If the input was valid, the user is asked to enter the new name
+
                     if (target[0] != '\0')
                     {
                         printf("\nEnter new name for item \"%s\": ", target);
@@ -179,7 +214,7 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                         }
 
                         strcpy(targetPtr->listItem, target);
-                        printLog('s', "Item name changed.\n\n");
+                        printLog('s', "Item name changed.\n\n");  // Success message to notify the user
                         enterToContinue();
                     }
                     break;
@@ -194,6 +229,8 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
 					    enterToContinue();
                         break;
                     }
+                    // Inserts a new iteam which the user named into the current list
+
                     else if (insertListItem(&(nodePtr->startPtr), target) == 0)
                     {
                         printLog('s', "New item created.\n\n");
@@ -205,6 +242,7 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
             case 3:
                 {
                     while (1)
+                    // Repeatedly runs until user enters a valid name i.e. an existing item name
                     {
                         printf("\nEnter the name of the item to delete, or leave blank to cancel: ");
                         if ((fngets(target, 80)) == 1)
@@ -213,6 +251,9 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                             enterToContinue();
                             break;
                         }
+                        // Searches for the users input, and if it can not be found, an info warning is
+                        // printed, prompting the user to check their input was valid
+
                         else if ((targetPtr = searchByListItemName(nodePtr->startPtr, target)) == NULL)
                         {
                             printLog('i', "Can't find that item. Have you spelled it right?\n");
@@ -222,11 +263,12 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                             break;
                         }
                     }
+                     // If the input was valid, the specified item is removed from the list
 
                     if (target[0] != '\0')
                     {
                         removeListItem(&(nodePtr->startPtr), targetPtr);
-                        printLog('s', "Item deleted.\n\n");
+                        printLog('s', "Item deleted.\n\n");    // Success message
                         enterToContinue();
                     }
                     break;
@@ -238,6 +280,7 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                     BoardNodePtr destBoardPtr;
 
                     while(1)
+                    // Repeatedly runs until user enters a valid name i.e. an existing item name
                     {
                         printf("\nEnter the name of the item to move, or leave blank to cancel: ");
                         if (fngets(target, 80) == 1)
@@ -246,6 +289,9 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                             enterToContinue();
                             break;
                         }
+                        // Searches for the users input, and if it can not be found, an info warning is
+                        // printed, prompting the user to check their input was valid
+
                         else if ((targetPtr = searchByListItemName(nodePtr->startPtr, target)) == NULL)
                         {
                             printLog('i', "Can't find that item. Are you sure you spelled it right?\n");
@@ -256,13 +302,15 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                         }
                     }
 
-                    if (target[0] == '\0')
+                    if (target[0] == '\0')    // if the user doesnt enter a name, break and go back to the list menu
                     {
                         break;
                     }
 
                     while (1)
                     {
+
+
                         printf("\nEnter the name of list to move this item to, or leave blank to cancel: ");
                         if (fngets(destBoard, 80) == 1)
                         {
@@ -270,6 +318,11 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                             enterToContinue();
                             break;
                         }
+                        // Searches for the users input, (in this case, the name of the target list)
+                        // and if it can not be found, an info warning is printed
+                        // prompting the user to check their input was valid
+
+                        
                         else if ((destBoardPtr = searchByListName(*startPtr, destBoard)) == NULL)
                         {
                             printLog('i', "Can't find that list. Are you sure you spelled it right?\n");
@@ -280,24 +333,27 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                         }
                     }
 
-                    if (destBoard[0] == '\0')
+                    if (destBoard[0] == '\0')  // if the user doesnt enter a name, break and go back to the list menu
                     {
                         break;
                     }
-                
+
+                    // Remove the item from its current position in the board
                     if (targetPtr->prevPtr != NULL)
                     {
                         targetPtr->prevPtr->nextPtr = targetPtr->nextPtr;
                     }
                     else
                     {
-                        nodePtr->startPtr = targetPtr->nextPtr;     
+                        nodePtr->startPtr = targetPtr->nextPtr;  // Update the start pointer if the item is at the beginning
                     }
 
                     if (targetPtr->nextPtr != NULL)
                     {
                         targetPtr->nextPtr->prevPtr = targetPtr->prevPtr;
                     }
+
+                    // Add the item to the beginning of the destination list
 
                     targetPtr->nextPtr = destBoardPtr->startPtr;
                     if (destBoardPtr->startPtr != NULL)
@@ -312,7 +368,7 @@ void listMenu(BoardNodePtr nodePtr, BoardNodePtr *startPtr)
                 }
             case 5:
                 {
-                    return;
+                    return;  // Exits from the list menu while loop, returning the user to the main menu
                 }
         }
     }
