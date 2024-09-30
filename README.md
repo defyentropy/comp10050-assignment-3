@@ -1,4 +1,4 @@
-# COMP10050 Software Engineering Project Assignment 3
+# Software Engineering Project 1 Assignment 3
 ## Group AA
 - Liam Maher
 - Hari Mohan
